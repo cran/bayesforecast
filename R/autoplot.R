@@ -315,7 +315,7 @@ ggpacf = function(y,title = NULL){
 #' @examples
 #' \donttest{
 #'  library(astsa)
-#'  sf1 = auto.sarima(ts = birth)
+#'  sf1 = auto.sarima(ts = birth,iter = 500,chains = 1)
 #'  # fitted model
 #'  plot(sf1)
 #' }
@@ -353,7 +353,7 @@ plot.varstan = function(x,prob = 0.95,...){
 #' @examples
 #' \donttest{
 #'  library(astsa)
-#'  sf1 = auto.sarima(ts = birth)
+#'  sf1 = auto.sarima(ts = birth,iter = 500,chains = 1)
 #'  # fitted model
 #'  autoplot(sf1)
 #' }
@@ -407,7 +407,7 @@ autoplot.varstan = function(object,prob = 0.95,...){
 #' @examples
 #' \donttest{
 #'  library(astsa)
-#'  sf1 = auto.sarima(ts = birth)
+#'  sf1 = auto.sarima(ts = birth,iter = 500,chains = 1)
 #'  # fitted model
 #'  check_residuals(sf1)
 #' }
@@ -429,4 +429,75 @@ check_residuals = function(object,...){
   grob = list(p1,p2,p3,p4,p5)
   gridExtra::grid.arrange(grobs = grob,ncol=2,nrow = 3,layout_matrix = lay)
 
+}
+#' MCMC Plots Implemented in \pkg{bayesplot}
+#'
+#' Convenient way to call MCMC plotting functions
+#' implemented in the \pkg{bayesplot} package.
+#'
+#' @param object An \code{varstan} object.
+#' @param pars Names of parameters to be plotted,
+#'   as given by a character vector or regular expressions.
+#'   By default, all parameters except for group-level and
+#'   smooth effects are plotted. May be ignored for some plots.
+#' @param combo An array that contains the types of plot. By default
+#'   combo = c("dens","trace"). Supported types are (as names) \code{hist},
+#'   \code{dens}, \code{hist_by_chain}, \code{dens_overlay},
+#'   \code{violin}, \code{intervals}, \code{areas}, \code{acf},
+#'   \code{acf_bar},\code{trace}, \code{trace_highlight}, \code{scatter},
+#'   \code{rhat}, \code{rhat_hist}, \code{neff}, \code{neff_hist}
+#'   \code{nuts_acceptance}, \code{nuts_divergence},
+#'   \code{nuts_stepsize}, \code{nuts_treedepth}, and \code{nuts_energy}.
+#'   For an overview on the various plot types see
+#'   \code{\link[bayesplot:MCMC-overview]{MCMC-overview}}.
+#' @param fixed Indicates whether parameter names
+#'   should be matched exactly (\code{TRUE}) or treated as
+#'   regular expressions (\code{FALSE}). Default is \code{FALSE}.
+#' @param exact_match Deprecated alias of argument \code{fixed}.
+#' @param ... Additional arguments passed to the plotting functions.
+#'   See \code{\link[bayesplot:MCMC-overview]{MCMC-overview}} for
+#'   more details.
+#'
+#' @return A \code{\link[ggplot2:ggplot]{ggplot}} object
+#'   that can be further customized using the \pkg{ggplot2} package.
+#'
+#' @import bayesplot
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' sf1 = stan_ssm(ipc,iter = 500,chains = 1)
+#'
+#' # plot posterior intervals
+#' mcmc_plot(sf1)
+#'
+#' # only show population-level effects in the plots
+#' mcmc_plot(sf1, pars = "level")
+#' }
+#'
+mcmc_plot.varstan = function(object, pars = NULL, combo = c("dens","trace"),
+                              fixed = FALSE, exact_match = FALSE, ...) {
+
+  if( !is.varstan(object))
+    stop("The current object is not a varstan class")
+
+  gp = get_parameters(object)
+  code = match(x = pars,table = gp)
+
+  if(is.element(NA,code))
+    stop("pars contains an incorrect value")
+
+  if(is.null(pars)) pars = gp
+
+  x = as.data.frame(extract_stan(object = object,pars = pars))
+
+  g = bayesplot::mcmc_combo(x = x,pars = pars,combo = combo)
+
+  return(g)
+}
+
+#' @rdname mcmc_plot.varstan
+#' @export
+mcmc_plot = function(object, ...) {
+  UseMethod("mcmc_plot")
 }

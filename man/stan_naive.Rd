@@ -9,7 +9,7 @@ stan_naive(
   seasonal = FALSE,
   m = 0,
   chains = 4,
-  iter = 4000,
+  iter = 2000,
   warmup = floor(iter/2),
   adapt.delta = 0.9,
   tree.depth = 10,
@@ -81,7 +81,7 @@ where  \eqn{epsilon_t}{epsilon[t]} is a normal iid error.
 \donttest{
  library(astsa)
  # A seasonal Random-walk model.
- sf1 = stan_naive(birth,seasonal = TRUE)
+ sf1 = stan_naive(birth,seasonal = TRUE,iter = 500,chains = 1)
 }
 
 }

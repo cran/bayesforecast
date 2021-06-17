@@ -13,7 +13,7 @@ stan_ssm(
   period = 0,
   genT = FALSE,
   chains = 4,
-  iter = 4000,
+  iter = 2000,
   warmup = floor(iter/2),
   adapt.delta = 0.9,
   tree.depth = 10,
@@ -151,11 +151,11 @@ For changing the default prior use the function \code{set_prior()}.
 }
 \examples{
 \donttest{
- # Declaring a local level model model for the ipc data.
- sf1 = stan_ssm(ipc)
+ # Declaring a local level model for the ipc data.
+ sf1 = stan_ssm(ipc,iter = 500,chains = 1)
 
  # Declaring a Holt model for the ipc data.
- sf2 = stan_ssm(ipc,trend = TRUE,damped = TRUE)
+ sf2 = stan_ssm(ipc,trend = TRUE,damped = TRUE,iter = 500,chains = 1)
 }
 
 }

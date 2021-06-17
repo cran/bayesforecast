@@ -9,7 +9,7 @@ stan_SVM(
   arma = c(0, 0),
   xreg = NULL,
   chains = 4,
-  iter = 4000,
+  iter = 2000,
   warmup = floor(iter/2),
   adapt.delta = 0.9,
   tree.depth = 10,
@@ -96,7 +96,7 @@ The function returns a \code{varstan} object with the fitted model.
 \examples{
 \donttest{
  # Declares a SVM model for the IPC data
- sf1 = stan_SVM(ipc,arma = c(1,1))
+ sf1 = stan_SVM(ipc,arma = c(1,1),iter = 500,chains = 1)
 }
 
 }

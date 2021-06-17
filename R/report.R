@@ -41,6 +41,9 @@ report.varstan = function(object,...){
   if( is.garch(object$model))  report.garch(object$model)
   if( is.SVM(object$model))    report.SVM(object$model)
   if( is.ssm(object$model))    report.ssm(object$model)
+  if( is.LocalLevel(object$model))report.LocalLevel(object$model)
+  if( is.Holt(object$model))   report.Holt(object$model)
+  if( is.Hw(object$model))     report.Hw(object$model)
 }
 #' @aliases report
 #' @method report Sarima
@@ -158,6 +161,89 @@ report.ssm = function(object,...){
     stop("The object is not a ssm model \n")
 
   model.ssm(object)
+  cat("Priors: \n Scale Parameter:\n")
+  get_prior(object,par = "sigma0")
+  cat("\n")
+  get_prior(object,par = "level")
+  if(object$is_td)get_prior(model = object,par = "trend")
+  if(object$is_dp)get_prior(model = object,par = "damped")
+  if(object$is_ss)get_prior(model = object,par = "seasonal")
+  cat("Initial values \n")
+  get_prior(object,par = "level1")
+  if(object$is_td)get_prior(model = object,par = "trend1")
+  if(object$is_ss)get_prior(model = object,par = "seasonal1")
+  if(object$d1 > 0 ){
+    cat("\n Regression Parameters: \n")
+    get_prior(model = object,par = "breg")
+  }
+  if(object$genT){
+    cat("\n Generalized t-student \n")
+    cat("\n lambda ~ G(v/2,v/2) \n")
+    get_prior(model = object,par = "dfv")
+  }
+}
+#' @aliases report
+#' @method report LocalLevel
+#' @export
+#'
+report.LocalLevel = function(object,...){
+  if(!is.LocalLevel(object))
+    stop("The object is not a Local level model \n")
+
+  model.LocalLevel(object)
+  cat("Priors: \n Scale Parameter:\n")
+  get_prior(object,par = "sigma0")
+  cat("\n")
+  get_prior(object,par = "level")
+  cat("Initial values \n")
+  get_prior(object,par = "level1")
+  if(object$d1 > 0 ){
+    cat("\n Regression Parameters: \n")
+    get_prior(model = object,par = "breg")
+  }
+  if(object$genT){
+    cat("\n Generalized t-student \n")
+    cat("\n lambda ~ G(v/2,v/2) \n")
+    get_prior(model = object,par = "dfv")
+  }
+}
+#' @aliases report
+#' @method report Holt
+#' @export
+#'
+report.Holt = function(object,...){
+  if(!is.Holt(object))
+    stop("The object is not a Holt model \n")
+
+  model.Holt(object)
+  cat("Priors: \n Scale Parameter:\n")
+  get_prior(object,par = "sigma0")
+  cat("\n")
+  get_prior(object,par = "level")
+  if(object$is_td)get_prior(model = object,par = "trend")
+  if(object$is_dp)get_prior(model = object,par = "damped")
+  cat("Initial values \n")
+  get_prior(object,par = "level1")
+  if(object$is_td)get_prior(model = object,par = "trend1")
+  if(object$d1 > 0 ){
+    cat("\n Regression Parameters: \n")
+    get_prior(model = object,par = "breg")
+  }
+  if(object$genT){
+    cat("\n Generalized t-student \n")
+    cat("\n lambda ~ G(v/2,v/2) \n")
+    get_prior(model = object,par = "dfv")
+  }
+}
+#' @aliases report
+#' @method report Hw
+#' @export
+#'
+report.Hw = function(object,...){
+  if(!is.Hw(object))
+    stop("The object is not a Holt Winters model \n")
+
+  model.Hw(object)
   cat("Priors: \n Scale Parameter:\n")
   get_prior(object,par = "sigma0")
   cat("\n")
